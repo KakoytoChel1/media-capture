@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WinUI3MediaCaptureApp (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "WinUI3MediaCaptureApp (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

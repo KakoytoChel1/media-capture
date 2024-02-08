@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="WinUI3MediaCaptureApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUI3MediaCaptureApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:WinUI3MediaCaptureApp.ViewModels"
+    xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    mc:Ignorable="d"
+    x:Name="mainWindow">
+    
+    <Grid
+        x:Name="rootPanel"
+        Background="{StaticResource BackgroundWindowColor}">
+
+        <Grid.DataContext>
+            <vm:MainViewModel/>
+        </Grid.DataContext>
+
+        <Interactivity:Interaction.Behaviors>
+            <Interactions:EventTriggerBehavior EventName="Closed" SourceObject="{Binding ElementName=mainWindow}">
+                <Interactions:InvokeCommandAction Command="{Binding AppCloseCommand}"/>
+            </Interactions:EventTriggerBehavior>
+        </Interactivity:Interaction.Behaviors>
+
+        <Grid.Resources>
+            <Storyboard x:Name="OpenPanel">
+                <DoubleAnimation
+                    EnableDependentAnimation="True"
+                    Storyboard.TargetName="settingsPanel"
+                    Storyboard.TargetProperty="Width"
+                    From="0" To="300"
+                    Duration="0:0:0.1"/>
+            </Storyboard>
+
+            <Storyboard x:Name="ClosePanel">
+                <DoubleAnimation
+                    EnableDependentAnimation="True"
+                    Storyboard.TargetName="settingsPanel"
+                    Storyboard.TargetProperty="Width"
+                    From="300" To="0"
+                    Duration="0:0:0.1"/>
+            </Storyboard>
+
+            <Storyboard x:Name="OpenPhotoPanel">
+                <DoubleAnimation
+                    EnableDependentAnimation="True"
+                    Storyboard.TargetName="newPhotoPanel"
+                    Storyboard.TargetProperty="Height"
+                    From="0" To="200"
+                    Duration="0:0:0.1"/>
+            </Storyboard>
+
+            <Storyboard x:Name="ClosePhotoPanel">
+                <DoubleAnimation
+                    EnableDependentAnimation="True"
+                    Storyboard.TargetName="newPhotoPanel"
+                    Storyboard.TargetProperty="Height"
+                    From="200" To="0"
+                    Duration="0:0:0.1"/>
+            </Storyboard>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="MainColumn"/>
+            <ColumnDefinition x:Name="PanelsColumn" Width="300"/>
+            <ColumnDefinition x:Name="SidePanelColumn" Width="70"/>
+        </Grid.ColumnDefinitions>
+
+        <MediaPlayerElement
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            AutoPlay="True"
+            CornerRadius="20"
+            Stretch="Uniform"
+            Source="{Binding MediaSource}"/>
+
+        <Border
+            x:Name="newPhotoPanel"
+            Grid.Column="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Width="400"
+            Height="0"
+            Background="Transparent"
+            BorderThickness="0">
+            <Grid>
+                <Border
+                    Height="120"
+                    Width="220"
+                    CornerRadius="10"
+                    BorderThickness="3"
+                    BorderBrush="#27292d"
+                    Margin="10,0,0,10"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom">
+
+                    <Grid>
+                        <Image
+                            Stretch="UniformToFill"
+                            Source="{Binding CapturedImageSource}"/>
+
+                        <!--hehehehhe xD-->
+                        <Button
+                            x:Name="closePhPanel"
+                            Click="closePhPanel_Click"
+                            Style="{StaticResource SomeButton}"
+                            Height="auto"
+                            Width="auto"
+                            CornerRadius="5"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Margin="0,2,2,0"
+                            Background="#27292d">
+
+                            <Image
+                                Width="12"
+                                Height="12"
+                                Margin="7,2,7,2"
+                                Source="Assets/closeButton.png"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!--Center message-->
+        <Border
+            x:Name="centerMessagePanel"
+            Grid.ColumnSpan="2">
+
+            <Interactivity:Interaction.Behaviors>
+                <Interactions:DataTriggerBehavior Binding="{Binding IsCapturing}" ComparisonCondition="Equal" Value="True">
+                    <Interactions:ChangePropertyAction
+                        TargetObject="{Binding ElementName=centerMessagePanel}"
+                        PropertyName="Visibility"
+                        Value="Collapsed"/>
+                </Interactions:DataTriggerBehavior>
+
+                <Interactions:DataTriggerBehavior Binding="{Binding IsCapturing}" ComparisonCondition="Equal" Value="False">
+                    <Interactions:ChangePropertyAction
+                        TargetObject="{Binding ElementName=centerMessagePanel}"
+                        PropertyName="Visibility"
+                        Value="Visible"/>
+                </Interactions:DataTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+
+            <Grid
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="auto"
+                Height="auto">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel
+                    Grid.Column="0"
+                    Margin="0,10,0,0"
+                    Orientation="Vertical"
+                    Spacing="10">
+
+                    <TextBlock
+                        Foreground="{StaticResource TextColor}"
+                        Text="Camera capture has not started yet ..."
+                        FontSize="16"
+                        FontWeight="SemiBold"/>
+
+                    <TextBlock
+                        Foreground="Gray"
+                        Text="Do you want to start capturing?"
+                        FontSize="13"
+                        FontWeight="SemiBold"/>
+                </StackPanel>
+
+                <!--Start capturing button-->
+                <Button
+                    Margin="20,0,0,0"
+                    Grid.Column="1"
+                    ToolTipService.ToolTip="Start capturing"
+                    Command="{Binding StartCaptureCommand}"
+                    Style="{StaticResource StCaptureButton}">
+
+                    <Image
+                        Width="40"
+                        Source="Assets/Circle.png"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--Special recording panel-->
+        <Border
+            x:Name="spRecordPanel"
+            Grid.Column="1"
+            Background="{StaticResource BorderSidePanelColor}"
+            Height="40"
+            CornerRadius="5"
+            Width="auto"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Right"
+            Margin="0,0,30,20">
+
+            <Interactivity:Interaction.Behaviors>
+                <Interactions:DataTriggerBehavior Binding="{Binding IsRecording}" ComparisonCondition="Equal" Value="True">
+                    <Interactions:ChangePropertyAction 
+                        TargetObject="{Binding ElementName=spRecordPanel}" 
+                        PropertyName="Visibility"
+                        Value="Visible"/>
+                </Interactions:DataTriggerBehavior>
+
+                <Interactions:DataTriggerBehavior Binding="{Binding IsRecording}" ComparisonCondition="Equal" Value="False">
+                    <Interactions:ChangePropertyAction 
+                        TargetObject="{Binding ElementName=spRecordPanel}" 
+                        PropertyName="Visibility"
+                        Value="Collapsed"/>
+                </Interactions:DataTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Ellipse
+                    Grid.Column="0"
+                    Fill="Red"
+                    Height="13"
+                    Width="13"
+                    Margin="10,0,0,0"/>
+
+                <TextBlock
+                    Grid.Column="1"
+                    Text="{Binding CurrentRecordingTimeStr}"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"/>
+
+                <!--Pause button-->
+                <Button
+                    Grid.Column="2"
+                    Margin="15,0,0,0"
+                    Background="#1f2023"
+                    Command="{Binding PauseRecordingCommand}"
+                    Style="{StaticResource SideButtons}">
+
+                    <Interactivity:Interaction.Behaviors>
+                        <Interactions:DataTriggerBehavior Binding="{Binding RecordingIsPaused}" ComparisonCondition="Equal" Value="True">
+                            <Interactions:ChangePropertyAction 
+                                TargetObject="{Binding ElementName=pBtnImg}" 
+                                PropertyName="Source"
+                                Value="Assets/startButton.png"/>
+                        </Interactions:DataTriggerBehavior>
+
+                        <Interactions:DataTriggerBehavior Binding="{Binding RecordingIsPaused}" ComparisonCondition="Equal" Value="False">
+                            <Interactions:ChangePropertyAction 
+                                TargetObject="{Binding ElementName=pBtnImg}" 
+                                PropertyName="Source"
+                                Value="Assets/pauseButton.png"/>
+                        </Interactions:DataTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+
+                    <Image
+                        x:Name="pBtnImg"
+                        Width="20"
+                        Source="Assets/pauseButton.png"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--Side panel-->
+        <Border
+            Grid.Column="2"
+            Background="{StaticResource BorderSidePanelColor}">
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!--Stop capturing button-->
+                <Button
+                    x:Name="stopCaptureButton"
+                    Style="{StaticResource SideButtons}"
+                    Command="{Binding StopCaptureCommand}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    BorderThickness="2"
+                    ToolTipService.ToolTip="Cancel capturing">
+
+                    <Interactivity:Interaction.Behaviors>
+                        <Interactions:DataTriggerBehavior Binding="{Binding IsCapturing}" ComparisonCondition="Equal" Value="True">
+                            <Interactions:ChangePropertyAction 
+                                TargetObject="{Binding ElementName=stopCaptureButton}"
+                                PropertyName="Visibility"
+                                Value="Visible"/>
+                        </Interactions:DataTriggerBehavior>
+                        
+                        <Interactions:DataTriggerBehavior Binding="{Binding IsCapturing}" ComparisonCondition="Equal" Value="False">
+                            <Interactions:ChangePropertyAction 
+                                TargetObject="{Binding ElementName=stopCaptureButton}"
+                                PropertyName="Visibility"
+                                Value="Collapsed"/>
+                        </Interactions:DataTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+
+                    <Rectangle
+                        Width="13"
+                        Height="13"
+                        Fill="Red"/>
+                </Button>
+
+                <!--Take a photo button-->
+                <Button
+                    x:Name="takePhoto"
+                    Click="takePhoto_Click"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource SideButtons}"
+                    Command="{Binding CapturePhotoCommand}"
+                    ToolTipService.ToolTip="Take a photo">
+
+                    <Image
+                        Width="23"
+                        Source="Assets/emptyCamera.png"/>
+                </Button>
+
+                <!--Record button-->
+                <Button
+                    x:Name="recordButton"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    ToolTipService.ToolTip="Start recording"
+                    Command="{Binding StartRecordCommand}"
+                    CommandParameter="{Binding ElementName=rootPanel, Path=XamlRoot}"
+                    Style="{StaticResource RecordButton}">
+
+                    <Interactivity:Interaction.Behaviors>
+                        <Interactions:DataTriggerBehavior Binding="{Binding IsRecording}" ComparisonCondition="Equal" Value="true">
+                            <Interactions:ChangePropertyAction TargetObject="{Binding ElementName=recordImage}" PropertyName="Source" Value="Assets/stopButton.png"/>
+                            <Interactions:ChangePropertyAction TargetObject="{Binding ElementName=recordButton}" PropertyName="Background" Value="Red"/>
+                        </Interactions:DataTriggerBehavior>
+                        <Interactions:DataTriggerBehavior Binding="{Binding IsRecording}" ComparisonCondition="Equal" Value="false">
+                            <Interactions:ChangePropertyAction TargetObject="{Binding ElementName=recordImage}" PropertyName="Source" Value="Assets/videoEmpty.png"/>
+                            <Interactions:ChangePropertyAction TargetObject="{Binding ElementName=recordButton}" PropertyName="Background" Value="{StaticResource Primary}"/>
+                        </Interactions:DataTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+
+                    <Image
+                        x:Name="recordImage"
+                        Width="22"
+                        Source="Assets/videoEmpty.png"/>
+                </Button>
+
+                <!--Open settings button-->
+                <Button
+                    x:Name="OpenSettingsPanel"
+                    Click="OpenSettingsPanel_Click"
+                    Grid.Row="3"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    ToolTipService.ToolTip="Open settings"
+                    Style="{StaticResource SideButtons}">
+
+                    <Image
+                        Width="23"
+                        Source="Assets/tools3.png"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--Settings panel-->
+        <Border
+            x:Name="settingsPanel"
+            Grid.Column="1"
+            Width="0"
+            HorizontalAlignment="Right"
+            BorderThickness="0,0,1,0"
+            BorderBrush="#27292d"
+            Background="{StaticResource SettingsPanelColor}">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <!--Exit settings-->
+                <Button
+                    x:Name="CloseSettingsPanel"
+                    Click="CloseSettingsPanel_Click"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    ToolTipService.ToolTip="Back"
+                    Style="{StaticResource SideButtons}">
+                    <Image
+                        Source="Assets/back.png"
+                        Width="18"
+                        FlowDirection="RightToLeft"/>
+                </Button>
+
+                <StackPanel
+                    Margin="20,20,0,0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Spacing="20"
+                    Orientation="Vertical">
+
+                    <!--Video combobox-->
+                    <StackPanel
+                        Spacing="10">
+
+                        <TextBlock
+                            Style="{StaticResource BasicTextBlock}"
+                            Text="Selected video device"/>
+
+                        <ComboBox
+                            Width="200"
+                            ItemsSource="{Binding VideoDevices}"
+                            SelectedItem="{Binding SelectedVideoDevice, Mode=TwoWay}"
+                            SelectedIndex="{Binding SelectedVideoDeviceIndex, Mode=TwoWay}">
+
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock
+                                            FontWeight="Medium"
+                                            Foreground="White"
+                                            FontSize="12"
+                                            Text="{Binding Name}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!--Audio Combobox-->
+                    <StackPanel
+                        Spacing="10">
+
+                        <TextBlock
+                            Style="{StaticResource BasicTextBlock}"
+                            Text="Selected audio device"/>
+
+                        <ComboBox
+                            Width="200"
+                            ItemsSource="{Binding AudioDevices}"
+                            SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}"
+                            SelectedIndex="{Binding SelectedAudioDeviceIndex, Mode=TwoWay}">
+
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock
+                                            FontWeight="Medium"
+                                            Foreground="White"
+                                            FontSize="12"
+                                            Text="{Binding Name}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
