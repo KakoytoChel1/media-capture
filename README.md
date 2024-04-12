@@ -2,7 +2,7 @@
 
 ![](Images/mc_img1.png)
 
-**"Media Capture"** is a pet project, a demo application for recording video from a selected web camera. Developed using **Windows App SDK WinUI3**. The main functionality includes:
+**"Media Capture"** is a project application for recording video from a selected web camera. Developed using **Windows App SDK WinUI3**. The main functionality includes:
 - Video capture
 - Video record
 - Take a snapshot
