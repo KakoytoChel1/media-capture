@@ -2,6 +2,11 @@
 
 ![](Images/mc_img1.png)
 
+## Languages
+- [Українська](./README_UA.md)
+- [Русский](./README_RU.md)
+- [English](./README.md)
+
 **"Media Capture"** is a project application for recording video from a selected web camera. Developed using **Windows App SDK WinUI3**. The main functionality includes:
 - Video capture
 - Video record
@@ -20,5 +25,5 @@ To take a picture from the camera you just need to press the button with the **c
 
 ![](Images/mc_img3.png)
 
-### Conclusion:
+## Conclusion:
 To summarise the above, it should be said that this project is a simple demonstration pet-project.
